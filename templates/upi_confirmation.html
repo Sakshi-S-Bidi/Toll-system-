@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Payment Confirmation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='upi_confirmation.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>UPI Payment Confirmation</h1>
+        <p>Please wait while we confirm your payment...</p>
+        <div id="confirmation-message" style="display: none;">
+            <p id="status-message"></p>
+            <p id="redirect-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // Simulate payment confirmation with live timer
+        let seconds = 60; // Time in seconds for countdown
+        const countdownTimer = setInterval(() => {
+            document.getElementById('status-message').textContent = `Time left to display confirmation: ${seconds} seconds`;
+            seconds--;
+
+            if (seconds < 0) {
+                clearInterval(countdownTimer);
+                showConfirmation();
+            }
+        }, 1000); // Update every second
+
+        function showConfirmation() {
+            const isSuccess = Math.random() < 0.8; // Simulate 80% success rate
+
+            if (isSuccess) {
+                document.getElementById('status-message').textContent = 'Payment successful!';
+                document.getElementById('redirect-message').innerHTML = 'Thank you for your payment.<br><a href="/">Go back to home page</a>';
+            } else {
+                document.getElementById('status-message').textContent = 'Payment unsuccessful.';
+                document.getElementById('redirect-message').innerHTML = 'Please try again.<br><a href="/payment_options">Go back to payment options</a>';
+            }
+
+            document.getElementById('confirmation-message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

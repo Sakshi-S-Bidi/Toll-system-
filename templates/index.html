@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toll Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Toll Calculator</h1>
+        <form id="toll-form">
+            <label for="start_city">Start City:</label>
+            <input type="text" id="start_city" name="start_city" placeholder="Enter start city" required>
+
+            <label for="end_city">End City:</label>
+            <input type="text" id="end_city" name="end_city" placeholder="Enter end city" required>
+
+            <label for="vehicle_type">Vehicle Type:</label>
+            <select id="vehicle_type" name="vehicle_type" required>
+                <option value="">Select Vehicle Type</option>
+                <option value="car">Car</option>
+                <option value="truck">Truck</option>
+                <option value="motorcycle">Motorcycle</option>
+                <option value="heavy goods carrier">Heavy Goods Carrier</option>
+            </select>
+
+            <div id="vehicle-number-container" style="display: none;">
+                <label for="vehicle_number">Vehicle Number (INDIAN):</label>
+                <input type="text" id="vehicle_number" name="vehicle_number" placeholder="Enter vehicle number" required pattern="^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$">
+            </div>
+        </form>
+
+        <div id="vehicle-image-container" class="vehicle-image-container" style="display: none;">
+            <img id="vehicle_image" src="" alt="Vehicle Image">
+        </div>
+        
+        <button id="calculate-toll-button">Calculate Toll</button>
+
+        <div id="result" class="result">
+            <p id="distance"></p>
+            <p id="toll_amount"></p>
+            <p id="error" class="error"></p>
+            <button id="pay-button" style="display:none;">Pay</button>
+        </div>
+    </div>
+
+    <script>
+        const vehicleImageMap = {
+            'car': '{{ url_for('static', filename='car.png') }}',
+            'truck': '{{ url_for('static', filename='truck.png') }}',
+            'motorcycle': '{{ url_for('static', filename='motorcycle.png') }}',
+            'heavy goods carrier': '{{ url_for('static', filename='heavy_goods_carrier.png') }}'
+        };
+
+        document.getElementById('vehicle_type').addEventListener('change', function() {
+            const vehicleType = this.value;
+            const imageUrl = vehicleImageMap[vehicleType];
+            const vehicleImageContainer = document.getElementById('vehicle-image-container');
+            const vehicleNumberContainer = document.getElementById('vehicle-number-container');
+            const vehicleImage = document.getElementById('vehicle_image');
+
+            if (vehicleType) {
+                vehicleImage.src = imageUrl || '';
+                vehicleImageContainer.style.display = 'block';
+                vehicleNumberContainer.style.display = 'block';
+            } else {
+                vehicleImage.src = '';
+                vehicleImageContainer.style.display = 'none';
+                vehicleNumberContainer.style.display = 'none';
+            }
+        });
+
+        document.getElementById('calculate-toll-button').addEventListener('click', async () => {
+            const startCity = document.getElementById('start_city').value;
+            const endCity = document.getElementById('end_city').value;
+            const vehicleType = document.getElementById('vehicle_type').value;
+            const vehicleNumber = document.getElementById('vehicle_number').value;
+
+            if (!vehicleType || !vehicleNumber) {
+                document.getElementById('error').textContent = 'Please select a vehicle type and enter a vehicle number.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/calculate_toll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ start_city: startCity, end_city: endCity, vehicle_type: vehicleType, vehicle_number: vehicleNumber })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('distance').textContent = `Distance: ${result.distance.toFixed(2)} km`;
+                    document.getElementById('toll_amount').textContent = `Toll Amount: ₹${result.toll_amount.toFixed(2)}`;
+                    document.getElementById('error').textContent = '';
+                    document.getElementById('pay-button').style.display = 'block'; // Show the Pay button
+                } else {
+                    document.getElementById('error').textContent = result.error;
+                    document.getElementById('distance').textContent = '';
+                    document.getElementById('toll_amount').textContent = '';
+                    document.getElementById('pay-button').style.display = 'none'; // Hide the Pay button
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = 'An unexpected error occurred.';
+                document.getElementById('distance').textContent = '';
+                document.getElementById('toll_amount').textContent = '';
+                document.getElementById('pay-button').style.display = 'none'; // Hide the Pay button
+            }
+        });
+
+        document.getElementById('pay-button').addEventListener('click', () => {
+            // Redirect to the payment options page
+            window.location.href = '/payment_options';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bank_payment.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bank Payment</h1>
+        <form id="bank-payment-form" method="POST" action="/submit_bank_payment">
+
+            <label for="account_number">Account Number:</label>
+            <input type="text" id="account_number" name="account_number" placeholder="Enter Account Number" required>
+
+            <label for="ifsc_number">IFSC Number:</label>
+            <input type="text" id="ifsc_number" name="ifsc_number" placeholder="Enter IFSC Number" required>
+
+            <label for="account_holder_name">Account Holder Name:</label>
+            <input type="text" id="account_holder_name" name="account_holder_name" placeholder="Enter Account Holder Name" required>
+
+            <label for="bank_name">Bank Name:</label>
+            <input type="text" id="bank_name" name="bank_name" placeholder="Enter Bank Name" required>
+
+            <button type="button" id="submit-payment">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('submit-payment').addEventListener('click', function(event) {
+            event.preventDefault();
+            var form = document.getElementById('bank-payment-form');
+            var formData = new FormData(form);
+
+            // Submit form data asynchronously
+            fetch('/submit_bank_payment', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.otp) {
+                    // Redirect to OTP verification page
+                    window.location.href = '/bank_otp';
+                } else {
+                    alert(data.error || 'Unexpected error occurred.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit payment. Please try again later.');
+            });
+        });
+    </script>
+</body>
+</html>

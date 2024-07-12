@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='upi_payment.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>UPI Payment</h1>
+        <p>Enter your UPI ID to make the payment.</p>
+        <form id="upi-payment-form">
+            <label for="upi_id">Enter UPI ID:</label>
+            <input type="text" id="upi_id" name="upi_id" placeholder="Enter UPI ID" required>
+
+            <button type="submit">Submit</button>
+            <p id="error" class="error"></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('upi-payment-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const upiId = document.getElementById('upi_id').value;
+
+            if (!upiId) {
+                document.getElementById('error').textContent = 'Please enter a UPI ID.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/submit_upi_payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ upi_id: upiId })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Payment successful!');
+                    window.location.href = '/'; // Redirect to the home page or another page
+                } else {
+                    document.getElementById('error').textContent = result.error;
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = 'An unexpected error occurred.';
+            }
+        });
+    </script>
+</body>
+</html>

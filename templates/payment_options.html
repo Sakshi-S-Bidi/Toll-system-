@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Options</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='payment_options.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Options</h1>
+        <form id="payment-options-form">
+            <label for="payment_method">Select Payment Method:</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="">Select Payment Method</option>
+                <option value="upi">UPI</option>
+                <option value="bank">Bank Transfer</option>
+                <option value="card">Credit/Debit Card</option>
+            </select>
+            <button type="submit">Submit Payment</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('payment-options-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const selectedOption = document.getElementById('payment_method').value;
+
+            if (selectedOption === 'upi') {
+                window.location.href = '/upi_payment';
+            } else if (selectedOption === 'bank') {
+                window.location.href = '/bank_payment';
+            } else if (selectedOption === 'card') {
+                window.location.href = '/card_payment';
+            } else {
+                alert('Please select a payment method.');
+            }
+        });
+    </script>
+</body>
+</html>

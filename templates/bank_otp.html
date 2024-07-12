@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank OTP Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bank_otp.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bank OTP Verification</h1>
+        <form id="bank-otp-form" method="POST" action="/verify_bank_payment_otp">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+
+            <button type="submit">Verify OTP</button>
+
+            <div id="otp-timer">
+                <p>Time left to enter OTP: <span id="timer">60</span> seconds</p>
+                <button type="button" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
+            </div>
+        </form>
+
+        <button class="back-btn" onclick="redirectToPaymentOptions()">Back to Payment Options</button>
+        
+        <div id="otp-result">
+            <p id="otp-message"></p>
+            <button class="back-btn" onclick="redirectToPaymentOptions()">Back to Payment Options</button>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer logic
+        let timeLeft = 60;
+        const timerElement = document.getElementById('timer');
+        const countdownTimer = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+            } else {
+                clearInterval(countdownTimer);
+                document.getElementById('resend-otp').disabled = false;
+            }
+        }, 1000);
+
+        // Function to resend OTP
+        function resendOTP() {
+            // Simulate OTP resend logic
+            document.getElementById('resend-otp').disabled = true;
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            countdownTimer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                } else {
+                    clearInterval(countdownTimer);
+                    document.getElementById('resend-otp').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Function to redirect to payment options page
+        function redirectToPaymentOptions() {
+            window.location.href = '/payment_options';
+        }
+
+        // Function to handle OTP verification response
+        function handleOTPResponse(success) {
+            const otpResultDiv = document.getElementById('otp-result');
+            const otpMessage = document.getElementById('otp-message');
+
+            if (success) {
+                otpMessage.textContent = 'Payment successful!';
+                otpResultDiv.style.display = 'block';
+            } else {
+                otpMessage.textContent = 'Incorrect OTP. Please try again.';
+                otpResultDiv.style.display = 'block';
+            }
+        }
+
+        // Simulated function for OTP verification
+        document.getElementById('bank-otp-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const otp = document.getElementById('otp').value;
+
+            try {
+                const response = await fetch('/verify_bank_payment_otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ otp: otp })
+                });
+
+                const result = await response.json();
+                handleOTPResponse(response.ok);
+            } catch (error) {
+                console.error('Error occurred during OTP verification:', error);
+                handleOTPResponse(false);
+            }
+        });
+    </script>
+</body>
+</html>

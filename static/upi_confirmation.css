@@ -1,0 +1,67 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+    background-size: cover;
+    color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container styles */
+.container {
+    background-color: rgba(44, 62, 80, 0.8); /* Darker background with transparency */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Heading styles */
+h1 {
+    margin-bottom: 30px;
+    color: #ecf0f1;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/* Paragraph styles */
+p {
+    color: #ecf0f1;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+/* Confirmation message container */
+#confirmation-message {
+    margin-top: 20px;
+}
+
+/* Status message styles */
+#status-message {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Redirect message styles */
+#redirect-message {
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+/* Link styles */
+a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #2980b9;
+}
